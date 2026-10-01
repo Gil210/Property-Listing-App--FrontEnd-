@@ -1,6 +1,6 @@
 # Property Listing Front End App
 
-A front end application for a property listing app that has all the necessary navigation options to make a new and existing user to be able to understand and use the site and create their accounts, login, and find every suitable housing for sale so as to make users find their dream home.
+A front end application for a property listing app that has all the necessary navigation options to make a new and existing user to be able to understand and use the site alongside create their accounts, login, and find every suitable housing for sale so as to make users find their dream home.
 
 # Stacks Used For Creating App
 * **FrameWork & Build Tools:**
