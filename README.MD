@@ -9,13 +9,13 @@ A front end application for a property listing app that has all the necessary na
 - HTML5 (index.html)
 
 * **UI & Styling Assets:**
-- Google Fonts (DM Sans,Manrope)
+- Google Fonts (DM Sans, Manrope)
 
-* **Package & Environment Management
+* **Package & Environment Management**
 - Node.js/npm (package.json & package-lock.json)
 - dotenv/Environment Variables (env.example)
 
-* **Developer & Version Control Tools
+* **Developer & Version Control Tools**
 - Git & Git Hub (Version Control configured via git.ignore)
 - VS Code (Code Editor & Creator)
 
