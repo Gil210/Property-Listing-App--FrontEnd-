@@ -116,11 +116,14 @@ export default function Dashboard() {
       const unreadMessages = isAdmin ? [] : messages.filter((message) => (
         String(message.receiver?._id || message.receiver) === String(user._id) && !message.isRead
       ));
-      const readResponses = await Promise.all(unreadMessages.map((message) => markMessageRead(message._id, token)));
-      const updatedMessages = new Map(readResponses.map((result) => [result.data._id, result.data]));
-      if (updatedMessages.size) {
-        setThread(messages.map((message) => updatedMessages.get(message._id) || message));
-        setReceived((current) => current.map((message) => updatedMessages.get(message._id) || message));
+      if (unreadMessages.length) {
+        await Promise.all(unreadMessages.map((message) => markMessageRead(message._id, token)));
+        const readMessageIds = new Set(unreadMessages.map((message) => String(message._id)));
+        const markAsRead = (message) => readMessageIds.has(String(message._id))
+          ? { ...message, isRead: true }
+          : message;
+        setThread(messages.map(markAsRead));
+        setReceived((current) => current.map(markAsRead));
       }
     } catch (threadError) {
       setError(threadError.message);
