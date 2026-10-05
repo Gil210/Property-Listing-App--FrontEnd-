@@ -118,13 +118,13 @@ export default function Dashboard() {
         String(message.threadId || message._id) === threadId && !message.isRead
       ));
       if (unreadMessages.length) {
-        await Promise.all(unreadMessages.map((message) => markMessageRead(message._id, token)));
         const readMessageIds = new Set(unreadMessages.map((message) => String(message._id)));
         const markAsRead = (message) => readMessageIds.has(String(message._id))
           ? { ...message, isRead: true }
           : message;
         setThread(messages.map(markAsRead));
         setReceived((current) => current.map(markAsRead));
+        await Promise.all(unreadMessages.map((message) => markMessageRead(message._id, token)));
       }
     } catch (threadError) {
       setError(threadError.message);
