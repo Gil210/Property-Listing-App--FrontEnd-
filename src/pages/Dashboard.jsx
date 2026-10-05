@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { changePassword, getProfile, updateProfile } from '../api/users';
 import { deleteProperty, getMyProperties } from '../api/properties';
 import { getAdminMessages, getMessageThread, getReceivedMessages, getSentMessages, replyToMessage } from '../api/messages';
@@ -16,8 +16,24 @@ const sections = [
 ];
 const apiDocsUrl = API_BASE_URL.replace(/\/api\/v1\/?$/, '/api-docs');
 
+function getUserId(value) {
+  return String(value?._id || value || '');
+}
+
+function isMessageParticipant(message, userId) {
+  const currentUserId = getUserId(userId);
+  return currentUserId !== '' && (
+    getUserId(message.sender) === currentUserId ||
+    getUserId(message.receiver) === currentUserId
+  );
+}
+
 export default function Dashboard() {
   const { user, token, setUser } = useAuth();
+  const dashboardIdentity = `${getUserId(user._id)}:${token || ''}:${user.role}`;
+  const latestDashboardIdentity = useRef(dashboardIdentity);
+  latestDashboardIdentity.current = dashboardIdentity;
+  const threadRequestVersion = useRef(0);
   const [section, setSection] = useState('overview');
   const [profile, setProfile] = useState(user);
   const [listings, setListings] = useState([]);
@@ -42,23 +58,53 @@ export default function Dashboard() {
   const isAdmin = user.role === 'admin';
   const visibleSections = sections.filter((item) => !item.ownersOnly || canList);
 
-  async function loadDashboard() {
+  async function loadDashboard(isCurrentRequest) {
     setLoading(true);
     setError('');
+    setReceived([]);
+    setSent([]);
+    setAdminMessages([]);
+    setActiveMessage(null);
+    setThread([]);
+    setThreadLoading(false);
     const tasks = [
-      getProfile(token).then((response) => { setProfile(response.data); setUser(response.data); }),
-      getReceivedMessages(token).then((response) => setReceived(response.data || [])),
-      getSentMessages(token).then((response) => setSent(response.data || []))
+      getProfile(token).then((response) => {
+        if (isCurrentRequest()) { setProfile(response.data); setUser(response.data); }
+      }),
+      getReceivedMessages(token).then((response) => {
+        if (isCurrentRequest()) {
+          setReceived((response.data || []).filter((message) => getUserId(message.receiver) === getUserId(user._id)));
+        }
+      }),
+      getSentMessages(token).then((response) => {
+        if (isCurrentRequest()) {
+          setSent((response.data || []).filter((message) => getUserId(message.sender) === getUserId(user._id)));
+        }
+      })
     ];
-    if (isAdmin) tasks.push(getAdminMessages(token).then((response) => setAdminMessages(response.data || [])));
-    if (canList) tasks.push(getMyProperties(token).then((response) => setListings(response.data || [])));
+    if (isAdmin) tasks.push(getAdminMessages(token).then((response) => {
+      if (isCurrentRequest()) setAdminMessages(response.data || []);
+    }));
+    if (canList) tasks.push(getMyProperties(token).then((response) => {
+      if (isCurrentRequest()) setListings(response.data || []);
+    }));
     const results = await Promise.allSettled(tasks);
     const failed = results.find((result) => result.status === 'rejected');
-    if (failed) setError(failed.reason.message);
-    setLoading(false);
+    if (isCurrentRequest()) {
+      if (failed) setError(failed.reason.message);
+      setLoading(false);
+    }
   }
 
-  useEffect(() => { loadDashboard(); }, [token]);
+  useEffect(() => {
+    let current = true;
+    const requestIdentity = dashboardIdentity;
+    loadDashboard(() => current && latestDashboardIdentity.current === requestIdentity);
+    return () => {
+      current = false;
+      threadRequestVersion.current += 1;
+    };
+  }, [token, user._id, user.role]);
 
   async function saveProfile(event) {
     event.preventDefault();
@@ -104,6 +150,12 @@ export default function Dashboard() {
   }
 
   async function openMessage(item) {
+    if (!isAdmin && !isMessageParticipant(item, user._id)) {
+      setError('This conversation is not available to your account.');
+      return;
+    }
+    const requestIdentity = dashboardIdentity;
+    const requestVersion = ++threadRequestVersion.current;
     setActiveMessage(item);
     setThread([]);
     setThreadLoading(true);
@@ -111,7 +163,14 @@ export default function Dashboard() {
     setNotice('');
     try {
       const response = await getMessageThread(item._id, token);
+      if (latestDashboardIdentity.current !== requestIdentity || threadRequestVersion.current !== requestVersion) return;
       const messages = response.data || [];
+      if (!isAdmin && messages.some((message) => !isMessageParticipant(message, user._id))) {
+        setThread([]);
+        setActiveMessage(null);
+        setError('This conversation is not available to your account.');
+        return;
+      }
       setThread(messages);
       const threadMessagesById = new Map(messages.map((message) => [String(message._id), message]));
       setReceived((current) => current.map((message) => {
@@ -119,21 +178,27 @@ export default function Dashboard() {
         return updatedMessage ? { ...message, isRead: updatedMessage.isRead } : message;
       }));
     } catch (threadError) {
-      setError(threadError.message);
+      if (latestDashboardIdentity.current === requestIdentity && threadRequestVersion.current === requestVersion) {
+        setError(threadError.message);
+      }
     } finally {
-      setThreadLoading(false);
+      if (latestDashboardIdentity.current === requestIdentity && threadRequestVersion.current === requestVersion) {
+        setThreadLoading(false);
+      }
     }
   }
 
   async function sendReply(event) {
     event.preventDefault();
     const message = replyText.trim();
-    if (!message || !activeMessage) return;
+    if (!message || !activeMessage || (!isAdmin && !isMessageParticipant(activeMessage, user._id))) return;
+    const requestIdentity = dashboardIdentity;
     setSendingReply(true);
     setError('');
     setNotice('');
     try {
       const response = await replyToMessage(activeMessage._id, { message }, token);
+      if (latestDashboardIdentity.current !== requestIdentity) return;
       const reply = response.data;
       setThread((current) => [...current, reply]);
       if (String(reply.sender?._id || reply.sender) === String(user._id)) {
@@ -145,9 +210,9 @@ export default function Dashboard() {
       setReplyText('');
       setNotice('Your reply has been sent.');
     } catch (replyError) {
-      setError(replyError.message);
+      if (latestDashboardIdentity.current === requestIdentity) setError(replyError.message);
     } finally {
-      setSendingReply(false);
+      if (latestDashboardIdentity.current === requestIdentity) setSendingReply(false);
     }
   }
 
@@ -158,9 +223,11 @@ export default function Dashboard() {
     getMyProperties(token).then((response) => setListings(response.data || [])).catch((loadError) => setError(loadError.message));
   }
 
-  const unreadCount = received.filter((item) => !item.isRead).length;
-  const allParticipantMessages = [...received, ...sent];
-  const messageSource = messageBox === 'received' ? received : sent;
+  const receivedForUser = received.filter((message) => getUserId(message.receiver) === getUserId(user._id));
+  const sentForUser = sent.filter((message) => getUserId(message.sender) === getUserId(user._id));
+  const unreadCount = receivedForUser.filter((item) => !item.isRead).length;
+  const allParticipantMessages = [...receivedForUser, ...sentForUser];
+  const messageSource = messageBox === 'received' ? receivedForUser : sentForUser;
   const messageRows = isAdmin
     ? adminMessages.filter((item) => !item.parentMessage).map((item) => ({ item, preview: item, unread: false }))
     : [...new Map(messageSource.map((message) => {
