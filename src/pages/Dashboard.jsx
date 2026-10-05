@@ -113,8 +113,9 @@ export default function Dashboard() {
       const response = await getMessageThread(item._id, token);
       const messages = response.data || [];
       setThread(messages);
-      const unreadMessages = isAdmin ? [] : messages.filter((message) => (
-        String(message.receiver?._id || message.receiver) === String(user._id) && !message.isRead
+      const threadId = String(item.threadId || item._id);
+      const unreadMessages = isAdmin ? [] : received.filter((message) => (
+        String(message.threadId || message._id) === threadId && !message.isRead
       ));
       if (unreadMessages.length) {
         await Promise.all(unreadMessages.map((message) => markMessageRead(message._id, token)));
