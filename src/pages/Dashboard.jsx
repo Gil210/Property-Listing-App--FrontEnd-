@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { changePassword, getProfile, updateProfile } from '../api/users';
 import { deleteProperty, getMyProperties } from '../api/properties';
-import { getAdminMessages, getMessageThread, getReceivedMessages, getSentMessages, markMessageRead, replyToMessage } from '../api/messages';
+import { getAdminMessages, getMessageThread, getReceivedMessages, getSentMessages, replyToMessage } from '../api/messages';
 import { API_BASE_URL } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Icon from '../components/Icon';
@@ -113,19 +113,11 @@ export default function Dashboard() {
       const response = await getMessageThread(item._id, token);
       const messages = response.data || [];
       setThread(messages);
-      const threadId = String(item.threadId || item._id);
-      const unreadMessages = isAdmin ? [] : received.filter((message) => (
-        String(message.threadId || message._id) === threadId && !message.isRead
-      ));
-      if (unreadMessages.length) {
-        const readMessageIds = new Set(unreadMessages.map((message) => String(message._id)));
-        const markAsRead = (message) => readMessageIds.has(String(message._id))
-          ? { ...message, isRead: true }
-          : message;
-        setThread(messages.map(markAsRead));
-        setReceived((current) => current.map(markAsRead));
-        await Promise.all(unreadMessages.map((message) => markMessageRead(message._id, token)));
-      }
+      const threadMessagesById = new Map(messages.map((message) => [String(message._id), message]));
+      setReceived((current) => current.map((message) => {
+        const updatedMessage = threadMessagesById.get(String(message._id));
+        return updatedMessage ? { ...message, isRead: updatedMessage.isRead } : message;
+      }));
     } catch (threadError) {
       setError(threadError.message);
     } finally {
