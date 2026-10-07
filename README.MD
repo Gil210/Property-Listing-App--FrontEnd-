@@ -1,6 +1,13 @@
 # Property Listing Front End App
 
-A front end application for a property listing app that has all the necessary navigation options to make a new and existing user to be able to understand and use the site alongside create their accounts, login, and find every suitable housing for sale so as to make users find their dream home.
+A front end application for a users & owners to list, sell and buy homing properties that suites their taste. Here at Haven, we are driven at helping everyone in need to find their potential new home and home owners sell their homes at a very good and affordable price.
+
+The front end app is designed to be flexible, very easy to navigate and user friendly for both old and new users of the app.
+
+# Front End URL (Render)
+- `https://property-listing-app-frontend-41eh.onrender.com/`
+
+
 
 # Stacks Used For Creating App
 * **FrameWork & Build Tools:**
