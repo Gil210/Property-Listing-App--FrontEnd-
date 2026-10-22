@@ -25,12 +25,18 @@ export function AuthProvider({ children }) {
   }, [token]);
 
   async function acceptAuth(response) {
-    const authToken = response.data?.token;
-    if (!authToken || !response.data?.user) throw new Error('The API response did not include a user and access token.');
+    const authToken = response.token || response.data?.token;
+    if (!authToken) throw new Error('The API response did not include an access token.');
+    let authUser = response.data?.user || response.user;
+    if (!authUser) {
+      const currentUserResponse = await getCurrentUser(authToken);
+      authUser = currentUserResponse.data;
+    }
+    if (!authUser) throw new Error('The API response did not include the current user.');
     localStorage.setItem(TOKEN_KEY, authToken);
     setToken(authToken);
-    setUser(response.data.user);
-    return response.data.user;
+    setUser(authUser);
+    return authUser;
   }
 
   async function signIn(details) {
@@ -38,7 +44,7 @@ export function AuthProvider({ children }) {
   }
 
   async function signUp(details) {
-    return acceptAuth(await registerRequest(details));
+    return registerRequest(details);
   }
 
   function signOut() {

@@ -7,6 +7,11 @@ The front end app is designed to be flexible, very easy to navigate and user fri
 # Front End URL (Render)
 - `https://property-listing-app-frontend-41eh.onrender.com/`
 
+# Backend API
+- API base URL: `https://product-listing-app-backend-t0cz.onrender.com/api/v1`
+- API documentation: `https://product-listing-app-backend-t0cz.onrender.com/api-docs/#/`
+
+Set `VITE_API_URL` to the API base URL when running or building the frontend. Registration sends a verification code to the supplied email; verify it at `/verify-email` before signing in. Verification codes expire after seven minutes.
 
 
 
@@ -27,5 +32,3 @@ The front end app is designed to be flexible, very easy to navigate and user fri
 # Developer & Version Control Tools:
 - Git & Git Hub (Version Control configured via git.ignore)
 - VS Code (Code Editor & Creator)
-
-

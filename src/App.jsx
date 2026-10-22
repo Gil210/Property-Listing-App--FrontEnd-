@@ -5,12 +5,13 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import VerifyEmail from './pages/VerifyEmail';
 import PropertyDetails from './pages/PropertyDetails';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 
 export default function App() {
   const { pathname } = useLocation();
-  const authPage = pathname === '/login' || pathname === '/register';
-  return <>{!authPage && <Navbar />}<Routes><Route path="/" element={<Home />} /><Route path="/login" element={<Login />} /><Route path="/register" element={<Register />} /><Route path="/properties/:id" element={<PropertyDetails />} /><Route element={<ProtectedRoute />}><Route path="/dashboard" element={<Dashboard />} /></Route><Route path="*" element={<NotFound />} /></Routes>{!authPage && <Footer />}</>;
+  const authPage = pathname === '/login' || pathname === '/register' || pathname === '/verify-email';
+  return <>{!authPage && <Navbar />}<Routes><Route path="/" element={<Home />} /><Route path="/login" element={<Login />} /><Route path="/register" element={<Register />} /><Route path="/verify-email" element={<VerifyEmail />} /><Route path="/properties/:id" element={<PropertyDetails />} /><Route element={<ProtectedRoute />}><Route path="/dashboard" element={<Dashboard />} /></Route><Route path="*" element={<NotFound />} /></Routes>{!authPage && <Footer />}</>;
 }

@@ -1,4 +1,4 @@
-const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+const baseUrl = (import.meta.env.VITE_API_URL || 'https://product-listing-app-backend-t0cz.onrender.com').replace(/\/$/, '');
 const API_BASE_URL = baseUrl.endsWith('/api/v1') ? baseUrl : `${baseUrl}/api/v1`;
 
 export async function request(path, options = {}) {

@@ -14,7 +14,7 @@ const sections = [
   { id: 'messages', label: 'Messages', icon: 'mail' },
   { id: 'profile', label: 'Profile & security', icon: 'user' }
 ];
-const apiDocsUrl = API_BASE_URL.replace(/\/api\/v1\/?$/, '/api-docs');
+const apiDocsUrl = API_BASE_URL.replace(/\/api\/v1\/?$/, '/api-docs/#/');
 
 function getUserId(value) {
   return String(value?._id || value || '');

@@ -21,7 +21,7 @@ export default function Register() {
     setSubmitting(true);
     try {
       await signUp(values);
-      navigate('/dashboard', { replace: true });
+      navigate(`/verify-email?email=${encodeURIComponent(values.email)}`, { replace: true });
     } catch (registerError) {
       setError(registerError.message);
     } finally {
