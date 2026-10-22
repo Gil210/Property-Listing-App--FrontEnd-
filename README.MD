@@ -11,7 +11,7 @@ The front end app is designed to be flexible, very easy to navigate and user fri
 - API base URL: `https://product-listing-app-backend-t0cz.onrender.com/api/v1`
 - API documentation: `https://product-listing-app-backend-t0cz.onrender.com/api-docs/#/`
 
-Set `VITE_API_URL` to the API base URL when running or building the frontend. Registration sends a verification code to the supplied email; verify it at `/verify-email` before signing in. Verification codes expire after seven minutes.
+For local development, `VITE_API_URL` defaults to `http://localhost:5000/api/v1`; start the backend before the frontend. Set it to `https://product-listing-app-backend-t0cz.onrender.com/api/v1` when building for the deployed backend. Registration sends a verification code to the supplied email; verify it at `/verify-email` before signing in. Verification codes expire after seven minutes.
 
 
 
