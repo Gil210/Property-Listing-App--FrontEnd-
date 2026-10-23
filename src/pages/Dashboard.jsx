@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { changePassword, getProfile, updateProfile } from '../api/users';
+import { changePassword, deleteUser, getProfile, getUsers, updateProfile, updateUserStatus } from '../api/users';
 import { deleteProperty, getMyProperties } from '../api/properties';
 import { getAdminMessages, getMessageThread, getReceivedMessages, getSentMessages, replyToMessage } from '../api/messages';
 import { API_BASE_URL } from '../api/client';
@@ -12,7 +12,8 @@ const sections = [
   { id: 'overview', label: 'Overview', icon: 'home' },
   { id: 'listings', label: 'My listings', icon: 'pin', ownersOnly: true },
   { id: 'messages', label: 'Messages', icon: 'mail' },
-  { id: 'profile', label: 'Profile & security', icon: 'user' }
+  { id: 'profile', label: 'Profile & security', icon: 'user' },
+  { id: 'users', label: 'Manage users', icon: 'user', adminOnly: true }
 ];
 const apiDocsUrl = API_BASE_URL.replace(/\/api\/v1\/?$/, '/api-docs/#/');
 
@@ -37,6 +38,8 @@ export default function Dashboard() {
   const [section, setSection] = useState('overview');
   const [profile, setProfile] = useState(user);
   const [listings, setListings] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [busyUserId, setBusyUserId] = useState('');
   const [received, setReceived] = useState([]);
   const [sent, setSent] = useState([]);
   const [adminMessages, setAdminMessages] = useState([]);
@@ -56,7 +59,7 @@ export default function Dashboard() {
 
   const canList = user.role === 'owner' || user.role === 'admin';
   const isAdmin = user.role === 'admin';
-  const visibleSections = sections.filter((item) => !item.ownersOnly || canList);
+  const visibleSections = sections.filter((item) => (!item.ownersOnly || canList) && (!item.adminOnly || isAdmin));
 
   async function loadDashboard(isCurrentRequest) {
     setLoading(true);
@@ -87,6 +90,9 @@ export default function Dashboard() {
     }));
     if (canList) tasks.push(getMyProperties(token).then((response) => {
       if (isCurrentRequest()) setListings(response.data || []);
+    }));
+    if (isAdmin) tasks.push(getUsers(token).then((response) => {
+      if (isCurrentRequest()) setUsers(response.data || []);
     }));
     const results = await Promise.allSettled(tasks);
     const failed = results.find((result) => result.status === 'rejected');
@@ -146,6 +152,37 @@ export default function Dashboard() {
       setNotice('Your listing has been removed.');
     } catch (deleteError) {
       setError(deleteError.message);
+    }
+
+    async function changeUserStatus(targetUser) {
+      setError('');
+      setNotice('');
+      setBusyUserId(targetUser._id);
+      try {
+        const response = await updateUserStatus(targetUser._id, !targetUser.isActive, token);
+        setUsers((current) => current.map((item) => item._id === targetUser._id ? response.data : item));
+        setNotice(`${targetUser.name}'s account is now ${response.data.isActive ? 'active' : 'inactive'}.`);
+      } catch (statusError) {
+        setError(statusError.message);
+      } finally {
+        setBusyUserId('');
+      }
+    }
+
+    async function removeUser(targetUser) {
+      if (targetUser._id === user._id || !window.confirm(`Permanently delete ${targetUser.name}'s account?`)) return;
+      setError('');
+      setNotice('');
+      setBusyUserId(targetUser._id);
+      try {
+        await deleteUser(targetUser._id, token);
+        setUsers((current) => current.filter((item) => item._id !== targetUser._id));
+        setNotice(`${targetUser.name}'s account has been deleted.`);
+      } catch (deleteError) {
+        setError(deleteError.message);
+      } finally {
+        setBusyUserId('');
+      }
     }
   }
 
@@ -288,6 +325,7 @@ export default function Dashboard() {
               </>}
             </div>}
             {section === 'profile' && <div><div className="dashboard-title-row"><div><span className="eyebrow-small">YOUR DETAILS</span><h2>Profile & security</h2><p className="dashboard-subtitle">Keep your contact details up to date.</p></div></div><div className="profile-forms"><form className="dashboard-form-card" onSubmit={saveProfile}><h3>Personal details</h3><label className="field">Full name<input value={profile?.name || ''} required minLength="2" maxLength="80" onChange={(event) => setProfile((current) => ({ ...current, name: event.target.value }))} /></label><label className="field">Email address<input value={profile?.email || ''} readOnly /></label><label className="field">Phone number<input type="tel" value={profile?.phone || ''} onChange={(event) => setProfile((current) => ({ ...current, phone: event.target.value }))} placeholder="Add a phone number" /></label><button className="btn btn-dark" disabled={savingProfile}>{savingProfile ? 'Saving…' : 'Save changes'} <Icon name="arrow" size={15} /></button></form><form className="dashboard-form-card" onSubmit={savePassword}><h3>Change password</h3><label className="field">Current password<input type="password" required value={passwordValues.currentPassword} onChange={(event) => setPasswordValues((current) => ({ ...current, currentPassword: event.target.value }))} /></label><label className="field">New password <span className="field-hint">(at least 8 characters)</span><input type="password" required minLength="8" value={passwordValues.newPassword} onChange={(event) => setPasswordValues((current) => ({ ...current, newPassword: event.target.value }))} /></label><button className="btn btn-outline">Update password <Icon name="arrow" size={15} /></button></form></div></div>}
+            {section === 'users' && isAdmin && <div><div className="dashboard-title-row"><div><span className="eyebrow-small">ADMINISTRATION</span><h2>Manage users</h2><p className="dashboard-subtitle">Review accounts and manage access to Haven.</p></div><span className="user-total">{users.length} {users.length === 1 ? 'account' : 'accounts'}</span></div>{users.length ? <div className="admin-user-list">{users.map((targetUser) => <article className="admin-user-row" key={targetUser._id}><div className="avatar">{targetUser.name?.charAt(0)?.toUpperCase() || 'H'}</div><div className="admin-user-details"><strong>{targetUser.name}</strong><span>{targetUser.email}</span><small>{targetUser.phone || 'No phone number'} · <span className="role-label">{targetUser.role}</span></small></div><span className={`status-pill ${targetUser.isActive ? '' : 'status-unavailable'}`}>{targetUser.isActive ? 'Active' : 'Inactive'}</span><button className="btn btn-outline btn-small" disabled={Boolean(busyUserId) || targetUser._id === user._id} onClick={() => changeUserStatus(targetUser)}>{targetUser.isActive ? 'Deactivate' : 'Reactivate'}</button><button className="btn btn-quiet btn-small" disabled={Boolean(busyUserId) || targetUser._id === user._id} onClick={() => removeUser(targetUser)}>Delete</button></article>)}</div> : <div className="empty-state dashboard-empty"><h3>No user accounts found</h3></div>}</div>}
           </>}
         </section>
       </div>

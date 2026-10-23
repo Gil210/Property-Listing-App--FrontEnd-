@@ -322,6 +322,15 @@ button { color: inherit; }
 .profile-forms .dashboard-form-card h3 { margin: 0 0 2px; }
 .profile-forms .btn { justify-self: start; margin-top: 3px; }
 .profile-forms input[readonly] { background: #f6f7f4; color: #838b83; }
+.user-total { color: #788078; font-size: 10px; }
+.admin-user-list { display: grid; }
+.admin-user-row { display: flex; align-items: center; gap: 12px; padding: 15px 8px; border-bottom: 1px solid #edf0e9; }
+.admin-user-details { min-width: 0; flex: 1; display: grid; gap: 4px; }
+.admin-user-details strong { font-size: 10px; }
+.admin-user-details > span, .admin-user-details small { overflow: hidden; color: #858d84; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.admin-user-details small .role-label { font-size: inherit; }
+.admin-user-row > .btn { flex: 0 0 auto; }
+.admin-user-row > .btn:disabled { cursor: not-allowed; opacity: .5; }
 
 .not-found { min-height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; text-align: center; }
 .not-found h1 { margin: 20px 0 9px; font: 600 38px var(--serif); letter-spacing: -.05em; }
@@ -428,6 +437,9 @@ button { color: inherit; }
   .dashboard-callout { align-items: flex-start; flex-wrap: wrap; }
   .dashboard-callout .text-link { margin-left: 51px; }
   .dashboard-property-grid, .owner-listing-grid, .profile-forms { grid-template-columns: 1fr; }
+  .admin-user-row { flex-wrap: wrap; gap: 8px; }
+  .admin-user-details { flex-basis: calc(100% - 50px); }
+  .admin-user-row > .status-pill { margin-left: 50px; }
   .dashboard-title-row { align-items: flex-start; }
   .dashboard-title-row h2 { font-size: 19px; }
   .dashboard-title-row > .btn { min-height: 38px; padding: 0 10px; font-size: 9px; }

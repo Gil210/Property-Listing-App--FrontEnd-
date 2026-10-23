@@ -69,12 +69,12 @@ export default function Home() {
         <form className="search-panel" onSubmit={submitSearch}>
           <label className="search-field search-field-wide"><span>Location or keyword</span><div className="search-input"><Icon name="search" size={19} /><input name="search" value={filters.search} onChange={updateFilter} placeholder="Try ‘a sunny apartment’" /></div></label>
           <label className="search-field"><span>City</span><div className="search-input"><Icon name="pin" size={18} /><input name="city" value={filters.city} onChange={updateFilter} placeholder="Anywhere" /></div></label>
-          <label className="search-field"><span>Home type</span><select name="propertyType" value={filters.propertyType} onChange={updateFilter}><option value="">Any type</option><option value="apartment">Apartment</option><option value="house">House</option><option value="condo">Condo</option><option value="land">Land</option><option value="commercial">Commercial</option></select></label>
+          <label className="search-field"><span>Home type</span><select name="propertyType" value={filters.propertyType} onChange={updateFilter}><option value="">Any type</option><option value="apartment">Apartment</option><option value="house">House</option><option value="condo">Condo</option><option value="land">Land</option><option value="commercial">Commercial</option><option value="hotel">Hotel</option></select></label>
           <button className="btn btn-green search-button"><Icon name="search" size={18} /> Find a home</button>
           <div className="search-extra">
             <label className="mini-field"><span>Min price (₦)</span><input aria-label="Minimum price" name="minPrice" type="number" min="0" value={filters.minPrice} onChange={updateFilter} placeholder="Any" /></label>
             <label className="mini-field"><span>Max price (₦)</span><input aria-label="Maximum price" name="maxPrice" type="number" min="0" value={filters.maxPrice} onChange={updateFilter} placeholder="Any" /></label>
-            <label className="mini-field"><span>Bedrooms</span><select aria-label="Bedrooms" name="bedrooms" value={filters.bedrooms} onChange={updateFilter}><option value="">Any</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option></select></label>
+            <label className="mini-field"><span>Bedrooms</span><select aria-label="Bedrooms" name="bedrooms" value={filters.bedrooms} onChange={updateFilter}><option value="">Any</option><option value="1">Exactly 1</option><option value="2">Exactly 2</option><option value="3">Exactly 3</option><option value="4">Exactly 4</option></select></label>
           </div>
         </form>
       </section>

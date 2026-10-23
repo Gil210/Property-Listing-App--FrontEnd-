@@ -20,8 +20,8 @@ export default function Register() {
     setError('');
     setSubmitting(true);
     try {
-      await signUp(values);
-      navigate(`/verify-email?email=${encodeURIComponent(values.email)}`, { replace: true });
+      const response = await signUp(values);
+      navigate('/login', { replace: true, state: { email: values.email, registered: true, registrationMessage: response.message } });
     } catch (registerError) {
       setError(registerError.message);
     } finally {
