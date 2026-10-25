@@ -55,7 +55,7 @@ export default function Home() {
 
   return (
     <>
-      <section className="hero" style={{ backgroundImage: `linear-gradient(90deg, rgba(55,13,18,.70), rgba(55,13,18,.12)), url("${heroImage}")` }}>
+      <section className="hero" style={{ backgroundImage: `linear-gradient(90deg, rgba(19,31,27,.70), rgba(19,31,27,.12)), url("${heroImage}")` }}>
         <div className="hero-content">
           <div className="eyebrow hero-eyebrow"><span /> A more considered way home</div>
           <h1>Find a place<br />to <em>belong.</em></h1>
@@ -70,7 +70,7 @@ export default function Home() {
           <label className="search-field search-field-wide"><span>Location or keyword</span><div className="search-input"><Icon name="search" size={19} /><input name="search" value={filters.search} onChange={updateFilter} placeholder="Try ‘a sunny apartment’" /></div></label>
           <label className="search-field"><span>City</span><div className="search-input"><Icon name="pin" size={18} /><input name="city" value={filters.city} onChange={updateFilter} placeholder="Anywhere" /></div></label>
           <label className="search-field"><span>Home type</span><select name="propertyType" value={filters.propertyType} onChange={updateFilter}><option value="">Any type</option><option value="apartment">Apartment</option><option value="house">House</option><option value="condo">Condo</option><option value="land">Land</option><option value="commercial">Commercial</option><option value="hotel">Hotel</option></select></label>
-          <button className="btn btn-red search-button"><Icon name="search" size={18} /> Find a home</button>
+          <button className="btn btn-green search-button"><Icon name="search" size={18} /> Find a home</button>
           <div className="search-extra">
             <label className="mini-field"><span>Min price (₦)</span><input aria-label="Minimum price" name="minPrice" type="number" min="0" value={filters.minPrice} onChange={updateFilter} placeholder="Any" /></label>
             <label className="mini-field"><span>Max price (₦)</span><input aria-label="Maximum price" name="maxPrice" type="number" min="0" value={filters.maxPrice} onChange={updateFilter} placeholder="Any" /></label>
@@ -81,7 +81,7 @@ export default function Home() {
 
       <section className="section listings-section" id="listings">
         <div className="section-heading">
-          <div><div className="eyebrow"><span /> THE HAVEN EDIT</div><h2>Places worth<br className="mobile-break" /> coming home to<span className="red-period">.</span></h2></div>
+          <div><div className="eyebrow"><span /> THE HAVEN EDIT</div><h2>Places worth<br className="mobile-break" /> coming home to<span className="green-period">.</span></h2></div>
           <p>Thoughtful spaces, selected with you in mind.<br />Your next chapter could start right here.</p>
         </div>
         {error && <div className="error-banner" role="alert">{error}</div>}
