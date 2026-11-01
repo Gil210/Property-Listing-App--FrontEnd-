@@ -80,7 +80,7 @@ button { color: inherit; }
 .search-input { display: flex; align-items: center; gap: 9px; color: #8d978c; }
 .search-input input { width: 100%; padding: 0; border: 0; outline: 0; color: var(--ink); background: transparent; font-size: 14px; }
 .search-input input::placeholder { color: #a4aaa3; }
-.search-field select { width: 100%; appearance: none; padding: 0; border: 0; outline: 0; color: #4c554d; background: transparent; font-size: 14px; cursor: pointer; }
+.search-field select { width: 100%; appearance: none; padding: 0; border: 0; outline: 0; color: #4c554d; background: transparent; font-size: 10px; cursor: pointer; }
 .search-button { min-width: 145px; margin-left: 12px; }
 .search-extra { grid-column: 1 / -1; display: flex; gap: 25px; padding: 17px 0 0; margin-top: 15px; border-top: 1px solid #eff0eb; }
 .mini-field { display: flex; gap: 8px; align-items: center; }
