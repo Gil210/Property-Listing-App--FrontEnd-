@@ -1,5 +1,5 @@
 :root {
-  font-family: 'Roboto', sans-serif;
+  font-family: Arial, sans-serif;
   font-size: 19px;
   font-weight: 700;
   color: #242b26;
@@ -22,7 +22,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
 body {
   margin: 0;
   min-width: 320px;
-  font: 700 19px 'Roboto', sans-serif;
+  font: 700 19px Arial, sans-serif;
 }
 button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
