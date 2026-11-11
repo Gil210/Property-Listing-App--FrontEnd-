@@ -5,13 +5,13 @@ A front end application for users & owners to list, sell and buy homing properti
 The front end app is designed to be flexible, very easy to navigate and user friendly for both old and new users of the app.
 
 # Front End URL (Render)
-- `https://property-listing-app-frontend-41eh.onrender.com/`
+- `https://haven-homes-ebma.onrender.com`
 
 # Backend API
-- API base URL: `https://product-listing-app-backend-t0cz.onrender.com/api/v1`
-- API documentation: `https://product-listing-app-backend-t0cz.onrender.com/api-docs/#/`
+- API base URL: `https://property-listing-app-backend-2m81.onrender.com/api/v1`
+- API documentation: `https://property-listing-app-backend-2m81.onrender.com/api-docs/#/`
 
-For local development, `VITE_API_URL` defaults to `http://localhost:5000/api/v1`; start the backend before the frontend. Set it to `https://product-listing-app-backend-t0cz.onrender.com/api/v1` when building for the deployed backend. Registration is immediate; sign in with the email and password used to create the account.
+For local development, `VITE_API_URL` defaults to `http://localhost:5000/api/v1`; start the backend before the frontend. Set it to `https://property-listing-app-backend-2m81.onrender.com/api/v1` when building for the deployed backend. Registration is immediate; sign in with the email and password used to create the account.
 
 
 
